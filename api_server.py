@@ -1,6 +1,8 @@
 import json
 import logging
+import random
 from datetime import datetime
+from time import sleep
 
 from flask import Flask, request, abort
 
@@ -25,6 +27,7 @@ def get_person(person_id):
             'mass': '77',
             'skin_color': 'fair'
         }
+        random_delay()
         app.logger.info(f'Requested URL: {request.url}, Response Code: 200')
         return json.dumps(response)
 
@@ -44,6 +47,7 @@ def get_planet(planet_id):
             'terrain': 'desert',
             'population': '200000'
         }
+        random_delay()
         app.logger.info(f'Requested URL: {request.url}, Response Code: 200')
         return json.dumps(response)
 
@@ -64,6 +68,7 @@ def get_starship(starship_id):
             'crew': '1',
             'passengers': '0'
         }
+        random_delay()
         app.logger.info(f'Requested URL: {request.url}, Response Code: 200')
         return json.dumps(response)
 
@@ -74,8 +79,15 @@ def log_response(response):
     return response
 
 
+@app.before_request
+def random_delay():
+    delay = random.uniform(0.1, 2.0)
+    app.logger.info(f'Delay is {delay}')
+    sleep(delay)
+
+
 if __name__ == '__main__':
-    log_file = f'request_logs_{datetime.now().strftime("%Y%m%d%H%M%S")}.log'
+    log_file = f'server_logs_{datetime.now().strftime("%Y%m%d%H%M%S")}.log'
     app.logger.addHandler(logging.FileHandler(log_file))
     app.logger.setLevel(logging.INFO)
     app.run(host='127.0.0.1', port=3000)
